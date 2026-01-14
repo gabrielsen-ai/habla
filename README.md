@@ -30,16 +30,18 @@ habla/
 ├── google-credentials.json          # Google Cloud service account (IKKE commit!)
 ├── .env.local                       # Environment variabler
 ├── .gitignore                       # Beskytter credentials
-└── frontend/
-    ├── .env.local                   # Frontend env variabler
-    ├── app/
-    │   ├── api/
-    │   │   └── transcribe/
-    │   │       └── route.js         # Backend API for Speech-to-Text
-    │   ├── components/
-    │   │   └── VoiceOrbPage.js      # Hovedkomponent med audio recording
-    │   └── page.js
-    └── package.json
+├── package.json                     # Next.js dependencies
+├── next.config.mjs                  # Next.js konfigurasjon
+└── app/
+    ├── api/
+    │   ├── transcribe/
+    │   │   └── route.js             # Backend API for Speech-to-Text
+    │   └── tts/
+    │       └── route.js             # Backend API for Text-to-Speech
+    ├── components/
+    │   ├── VoiceOrbPage.js          # Hovedkomponent med audio recording
+    │   └── LearningPath.js          # Learning path UI
+    └── page.js                      # Hovedside
 ```
 
 ## 🔧 Setup (Allerede gjort!)
@@ -64,7 +66,6 @@ Opprettet `.env.local` med:
 
 ### Start serveren
 ```bash
-cd frontend
 npm run dev
 ```
 
@@ -235,7 +236,7 @@ gcloud config set project habla-483915
 ```
 
 **Alternativ 2: Bruk .env.local fil**
-Opprett `frontend/.env.local`:
+Opprett `.env.local` i root:
 ```env
 GOOGLE_CLOUD_PROJECT_ID=habla-483915
 GOOGLE_CREDENTIALS={"type":"service_account",...hele JSON fra google-credentials.json...}
@@ -243,7 +244,6 @@ GOOGLE_CREDENTIALS={"type":"service_account",...hele JSON fra google-credentials
 
 Deretter kjør som normalt:
 ```bash
-cd frontend
 npm run dev
 ```
 
