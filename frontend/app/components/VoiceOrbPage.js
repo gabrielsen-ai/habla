@@ -6,7 +6,8 @@ import './voice-orb.css';
 // State machine states
 const STATES = {
     IDLE: 'idle', // Initial state before starting
-    LISTENING: 'listening', // Mic is open, waiting for user speech + silence
+    READY_TO_RECORD: 'readyToRecord', // Lucia har snakket ferdig, venter på at bruker starter
+    LISTENING: 'listening', // Mic is open, user is speaking
     SENDING: 'sending',    // Sending audio to backend
     SPEAKING: 'speaking',  // AI is speaking
     ERROR: 'error',
@@ -16,7 +17,8 @@ const STATES = {
 
 const STATUS_TEXT = {
     [STATES.IDLE]: 'Starter...',
-    [STATES.LISTENING]: 'Lucia lytter...',
+    [STATES.READY_TO_RECORD]: 'Din tur! Trykk for å snakke',
+    [STATES.LISTENING]: 'Snakk nå... Trykk når du er ferdig',
     [STATES.SENDING]: 'Lucia tenker...',
     [STATES.SPEAKING]: 'Lucia snakker...',
     [STATES.ERROR]: 'Prøv igjen',
@@ -29,21 +31,16 @@ const INITIAL_GREETING_TEXT = "Hola, mi nombre es Lucia y yo trabajo aqui en el 
 export default function VoiceOrbPage() {
     const [state, setState] = useState(STATES.IDLE);
     const [lastExchange, setLastExchange] = useState(null);
-    const [conversationStarted, setConversationStarted] = useState(false);
+    const [turnCount, setTurnCount] = useState(0); // Track conversation turns
+    const [greetingPlayed, setGreetingPlayed] = useState(false); // Track if greeting has been played
 
-    // Audio recording & VAD refs
+    // Audio recording refs
     const mediaRecorderRef = useRef(null);
     const audioChunksRef = useRef([]);
     const streamRef = useRef(null);
 
-    // VAD State
+    // Audio context for resuming after user interaction
     const audioContextRef = useRef(null);
-    const sourceNodeRef = useRef(null);
-    const analyserRef = useRef(null);
-    const vadIntervalRef = useRef(null);
-    const speechStartTimeRef = useRef(0);
-    const lastSpeechTimeRef = useRef(0);
-    const isSpeakingRef = useRef(false);
 
     // Audio Playback
     const [isPlaying, setIsPlaying] = useState(false);
@@ -56,24 +53,28 @@ export default function VoiceOrbPage() {
     useEffect(() => {
         // Cleanup on unmount
         return () => {
-            stopRecordingAndVAD();
+            stopRecording();
             if (audioContextRef.current) audioContextRef.current.close();
         };
     }, []);
 
-    // Start conversation automatically
+    // Start conversation automatically (run once on mount)
     useEffect(() => {
-        if (!conversationStarted) {
-            setConversationStarted(true);
-            const startGreeting = async () => {
-                await new Promise(r => setTimeout(r, 1000));
-                setLastExchange({ user: '', ai: INITIAL_GREETING_TEXT });
-                // Play greeting, then start listening
-                await fetchTTS(INITIAL_GREETING_TEXT);
-            };
-            startGreeting();
-        }
-    }, [conversationStarted]);
+        if (greetingPlayed) return; // Prevent double-run
+        
+        setGreetingPlayed(true);
+        const startGreeting = async () => {
+            console.log('🎬 Starting greeting...');
+            await new Promise(r => setTimeout(r, 1000));
+            setLastExchange({ user: '', ai: INITIAL_GREETING_TEXT });
+            console.log('📢 Fetching TTS for greeting:', INITIAL_GREETING_TEXT);
+            // Play greeting, then start listening
+            await fetchTTS(INITIAL_GREETING_TEXT);
+        };
+        startGreeting();
+        
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // Empty array: only run on initial mount
 
     // Handle State Transitions
     useEffect(() => {
@@ -84,11 +85,51 @@ export default function VoiceOrbPage() {
     }, [state]);
 
 
-    // --- Core Logic: VAD & Recording ---
+    // --- Core Logic: Recording ---
 
-    const startRecordingAndVAD = async () => {
+    // Prepare for recording (get mic permission, show ready state)
+    const prepareForRecording = async () => {
         try {
             if (!streamRef.current) {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        channelCount: 1,
+                        sampleRate: 48000,
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true
+                    }
+                });
+                streamRef.current = stream;
+            }
+            setState(STATES.READY_TO_RECORD);
+            console.log("🎤 Ready to record - waiting for user to start");
+        } catch (error) {
+            console.error('❌ Mic error:', error);
+            setState(STATES.PERMISSION_NEEDED);
+        }
+    };
+
+    // Start recording when user presses the button
+    const startRecording = async () => {
+        try {
+            if (!streamRef.current) {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        channelCount: 1,
+                        sampleRate: 48000,
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true
+                    }
+                });
+                streamRef.current = stream;
+            }
+
+            // Verify stream is active
+            const tracks = streamRef.current.getAudioTracks();
+            if (tracks.length === 0 || tracks[0].readyState !== 'live') {
+                console.log("🔄 Stream not active, getting new stream...");
                 const stream = await navigator.mediaDevices.getUserMedia({
                     audio: {
                         channelCount: 1,
@@ -105,89 +146,29 @@ export default function VoiceOrbPage() {
             const mediaRecorder = new MediaRecorder(streamRef.current, { mimeType: 'audio/webm;codecs=opus' });
 
             mediaRecorder.ondataavailable = (event) => {
+                console.log("📦 Audio chunk received:", event.data.size, "bytes");
                 if (event.data.size > 0) audioChunksRef.current.push(event.data);
             };
 
             mediaRecorderRef.current = mediaRecorder;
-            mediaRecorder.start();
-
-            // Set up VAD
-            if (!audioContextRef.current) {
-                audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioContextRef.current.state === 'suspended') {
-                await audioContextRef.current.resume();
-            }
-
-            const ctx = audioContextRef.current;
-            const source = ctx.createMediaStreamSource(streamRef.current);
-            const analyser = ctx.createAnalyser();
-            analyser.fftSize = 512;
-            analyser.smoothingTimeConstant = 0.4;
-            source.connect(analyser);
-
-            sourceNodeRef.current = source;
-            analyserRef.current = analyser;
-
-            // Reset VAD flags
-            isSpeakingRef.current = false;
-            lastSpeechTimeRef.current = Date.now(); // Initialize to avoid instant trigger
-            speechStartTimeRef.current = 0;
+            // Start with timeslice to capture chunks continuously (every 250ms)
+            mediaRecorder.start(250);
 
             setState(STATES.LISTENING);
-            console.log("👂 Listening (VAD Active)...");
-
-            // VAD Loop
-            const checkAudioLevel = () => {
-                if (!analyserRef.current) return;
-
-                const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
-                analyserRef.current.getByteFrequencyData(dataArray);
-
-                // Calculate average volume
-                let sum = 0;
-                for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
-                const average = sum / dataArray.length;
-
-                const THRESHOLD = 20; // Adjust based on env
-                const SILENCE_DURATION = 2000; // 2s silence
-                const MIN_SPEECH_DURATION = 500; // Min 0.5s speech to count
-
-                const now = Date.now();
-
-                if (average > THRESHOLD) {
-                    if (!isSpeakingRef.current) {
-                        isSpeakingRef.current = true;
-                        speechStartTimeRef.current = now;
-                        console.log("🗣️ Speech detected!");
-                    }
-                    lastSpeechTimeRef.current = now;
-                } else {
-                    // Silence
-                    if (isSpeakingRef.current) {
-                        const silenceTime = now - lastSpeechTimeRef.current;
-                        const speechDuration = lastSpeechTimeRef.current - speechStartTimeRef.current;
-
-                        if (silenceTime > SILENCE_DURATION) {
-                            if (speechDuration > MIN_SPEECH_DURATION) {
-                                console.log("🤫 Silence detected after speech. Stopping.");
-                                setState(STATES.SENDING); // INSTANT FEEDBACK
-                                commitRecording();
-                            } else {
-                                // Reset if speech was too short (noise)
-                                isSpeakingRef.current = false;
-                                console.log("⚠️ Too short, ignoring.");
-                            }
-                        }
-                    }
-                }
-            };
-
-            vadIntervalRef.current = setInterval(checkAudioLevel, 100);
+            console.log("🎙️ Recording started - user is speaking");
 
         } catch (error) {
             console.error('❌ Mic error:', error);
             setState(STATES.PERMISSION_NEEDED);
+        }
+    };
+
+    // Handle the main microphone button press
+    const handleMicButtonPress = () => {
+        if (state === STATES.READY_TO_RECORD) {
+            startRecording();
+        } else if (state === STATES.LISTENING) {
+            finishRecording();
         }
     };
 
@@ -228,34 +209,43 @@ export default function VoiceOrbPage() {
         }
     }, [state]);
 
-    const stopRecordingAndVAD = () => {
-        if (vadIntervalRef.current) {
-            clearInterval(vadIntervalRef.current);
-            vadIntervalRef.current = null;
-        }
+    const stopRecording = () => {
         if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
             mediaRecorderRef.current.stop();
         }
-        // Don't close stream here if we want to reuse it, but for clean state transitions maybe better to keep it open?
-        // Let's keep stream open to avoid permission request again, but start/stop recorder.
-        // Actually, keep VAD analysis off during speaking.
     };
 
-    const commitRecording = async () => {
-        stopRecordingAndVAD();
-        // State is already SENDING from VAD loop for instant feedback
+    // Called when user presses the "done" button
+    const finishRecording = async () => {
         setState(STATES.SENDING);
+        console.log("📤 User finished speaking - sending audio");
+        
+        const recorder = mediaRecorderRef.current;
+        
+        if (!recorder || recorder.state === 'inactive') {
+            console.warn("No active recorder found");
+            setState(STATES.READY_TO_RECORD);
+            return;
+        }
 
-        // Wait for recorder to actually stop
-        await new Promise(resolve => {
-            if (mediaRecorderRef.current.state === 'inactive') resolve();
-            else mediaRecorderRef.current.onstop = resolve;
+        // Wait for the recorder to stop and collect all data
+        await new Promise((resolve) => {
+            // Set up onstop handler BEFORE calling stop()
+            recorder.onstop = () => {
+                console.log("🛑 Recording stopped, total chunks:", audioChunksRef.current.length);
+                resolve();
+            };
+            
+            // Now stop the recorder - this will trigger final ondataavailable, then onstop
+            recorder.stop();
         });
 
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        console.log("📼 Audio blob size:", audioBlob.size, "bytes");
+        
         if (audioBlob.size === 0) {
-            console.warn("Empty audio, restarting listener");
-            startRecordingAndVAD();
+            console.warn("Empty audio, going back to ready state");
+            setState(STATES.READY_TO_RECORD);
             return;
         }
 
@@ -264,9 +254,14 @@ export default function VoiceOrbPage() {
 
     const processAudio = async (audioBlob) => {
         try {
+            // Increment turn count for each user interaction
+            setTurnCount(prev => prev + 1);
+            const currentTurn = turnCount + 1;
+            
             const formData = new FormData();
             formData.append('audio', audioBlob, 'recording.webm');
             formData.append('scenario', 'kino');
+            formData.append('turnCount', currentTurn.toString()); // Send turn count to backend
 
             const response = await fetch('/api/transcribe', {
                 method: 'POST',
@@ -389,34 +384,12 @@ export default function VoiceOrbPage() {
     };
 
     const checkEndOfTurn = () => {
-        // Check if finished
-        const currentAiText = document.querySelector('.ai-last-msg-text')?.innerText || "";
-        // Wait, we store full text in lastExchange.ai
-        // But state update might be slightly delayed? Use ref or rely on component re-render check?
-        // We can just check the lastExchange state if we had access to the latest.
-        // Let's use a dirty DOM check or assume if we finished playing all chunks we go to listening.
-
-        // BETTER: Check the [FINISHED] tag in the last text chunk we processed or displayed.
-        // For now, let's assume we go back to listening unless we see [FINISHED].
-
-        // We need to know if the FULL response contained [FINISHED]. 
-        // Let's inspect the `lastExchange` content via a ref if needed, or just DOM.
-        const bubbles = document.querySelectorAll('.bubble-text');
-        const lastText = bubbles.length > 0 ? bubbles[bubbles.length - 1].innerText : ''; // Might operate on old DOM.
-
-        // Let's assume we restart listening.
-        // If we are finished, we should transition to FINISHED.
-        // Since `processAudio` updates `lastExchange`, we can check if it had [FINISHED].
-        // But we are inside a closure here potentially.
-        // Let's just always go to LISTENING. The UI will handle "Finished" via a separate effect or check.
-        // Wait, if we start listening when finished, that's bad.
-
-        // Simple fix: Check a global ref for "isConversationFinished" set during processAudio.
-        // Hack: Check `conversationFinishedRef`.
+        // Check if conversation is finished
         if (conversationFinishedRef.current) {
             setState(STATES.FINISHED);
         } else {
-            startRecordingAndVAD();
+            // Prepare for user's turn - show the "start recording" button
+            prepareForRecording();
         }
     };
 
@@ -476,16 +449,57 @@ export default function VoiceOrbPage() {
     return (
         <div className="voice-orb-container">
             <div className="top-area">
-                <h1 className="title">Kino</h1>
+                <h1 className="title">El cine</h1>
                 <div className="mission-list">
                     <h3 className="mission-title">Gjøremål</h3>
                     <ul className="missions">
-                        <li>Hils på Lucia</li>
-                        <li>Fortell at du skal se "City of God"</li>
-                        <li>Si hade på en høflig måte</li>
+                        <li>
+                            <div className="mission-content">
+                                <div className="mission-text">Hils på Lucia</div>
+                                <div className="sub-missions-container">
+                                    <span className="sub-missions-label">Begreper:</span>
+                                    <ul className="sub-missions">
+                                        <li>hola</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div className="mission-content">
+                                <div className="mission-text">Fortell at du skal se "Toy Story"</div>
+                                <div className="sub-missions-container">
+                                    <span className="sub-missions-label">Begreper:</span>
+                                    <ul className="sub-missions">
+                                        <li>quiero</li>
+                                        <li>ver</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div className="mission-content">
+                                <div className="mission-text">Si hade på en høflig måte</div>
+                                <div className="sub-missions-container">
+                                    <span className="sub-missions-label">Begreper:</span>
+                                    <ul className="sub-missions">
+                                        <li>adios</li>
+                                        <li>señorita</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
                     </ul>
                 </div>
-                <p className={`status-line ${state}`}>{STATUS_TEXT[state]}</p>
+                {(state === STATES.READY_TO_RECORD || state === STATES.LISTENING) ? (
+                    <button 
+                        className={`status-button ${state}`}
+                        onClick={handleMicButtonPress}
+                    >
+                        {state === STATES.READY_TO_RECORD ? '🎤 Din tur! Trykk for å snakke' : '⏹️ Trykk når du er ferdig'}
+                    </button>
+                ) : (
+                    <p className={`status-line ${state}`}>{STATUS_TEXT[state]}</p>
+                )}
             </div>
 
             <div className="center-area">
@@ -508,6 +522,7 @@ export default function VoiceOrbPage() {
                         )}
                     </div>
                 </div>
+
             </div>
 
             {/* Polished Transcript UI */}

@@ -6,12 +6,10 @@ node_modules/
 # Testing
 /coverage
 
-# Next.js
-/.next/
-/out/
-
 # Production
 /build
+/.next/
+/out/
 
 # Misc
 .DS_Store
@@ -23,13 +21,24 @@ yarn-debug.log*
 yarn-error.log*
 
 # Local env files
-.env*.local
 .env
+.env*.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # Vercel
 .vercel
 
-# Credentials - IMPORTANT: Never commit these!
+# Google Cloud credentials - NEVER COMMIT THESE!
 google-credentials.json
 *.json.key
+*-key.json
 service-account*.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

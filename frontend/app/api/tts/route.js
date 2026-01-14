@@ -1,12 +1,24 @@
 import { NextResponse } from 'next/server';
 import textToSpeech from '@google-cloud/text-to-speech';
-import path from 'path';
+
+// Get credentials from environment variable
+// In Vercel, set GOOGLE_CREDENTIALS as a JSON string of your service account key
+const getCredentials = () => {
+    if (process.env.GOOGLE_CREDENTIALS) {
+        // Parse JSON credentials from environment variable (Vercel deployment)
+        return JSON.parse(process.env.GOOGLE_CREDENTIALS);
+    }
+    // Fallback for local development - uses Application Default Credentials
+    return undefined;
+};
+
+const credentials = getCredentials();
+const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID || 'habla-483915';
 
 // Initialize Text-to-Speech client
-const ttsClient = new textToSpeech.TextToSpeechClient({
-    keyFilename: path.join(process.cwd(), '..', 'google-credentials.json'),
-    projectId: 'habla-483915'
-});
+const ttsClient = new textToSpeech.TextToSpeechClient(
+    credentials ? { credentials, projectId } : { projectId }
+);
 
 export async function POST(request) {
     try {

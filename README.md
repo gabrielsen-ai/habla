@@ -181,6 +181,86 @@ For testing er dette helt gratis! 🎉
 - [ ] Lagre conversation history
 - [ ] Legg til forskjellige spanske dialekter
 
+## 🚀 Deploy til Vercel
+
+### Steg 1: Forbered prosjektet
+Prosjektet er nå klart for Vercel deployment! Alle nødvendige konfigurasjoner er på plass:
+- ✅ `vercel.json` konfigurasjon
+- ✅ `.gitignore` filer
+- ✅ API-ruter bruker miljøvariabler
+
+### Steg 2: Koble til Vercel
+1. Gå til [vercel.com](https://vercel.com) og logg inn
+2. Klikk "Add New Project"
+3. Importer GitHub repository
+4. Vercel vil automatisk detektere Next.js prosjektet
+
+### Steg 3: Sett miljøvariabler i Vercel
+**VIKTIG**: Du MÅ sette opp disse miljøvariablene i Vercel:
+
+1. Gå til Project Settings → Environment Variables
+2. Legg til følgende variabler:
+
+**GOOGLE_CLOUD_PROJECT_ID**
+```
+habla-483915
+```
+
+**GOOGLE_CREDENTIALS** (JSON string)
+```json
+{"type":"service_account","project_id":"habla-483915","private_key_id":"...","private_key":"-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n","client_email":"...@habla-483915.iam.gserviceaccount.com","client_id":"...","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://oauth2.googleapis.com/token","auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs","client_x509_cert_url":"..."}
+```
+
+**Slik får du GOOGLE_CREDENTIALS JSON string**:
+```bash
+# Fra google-credentials.json filen din
+cat google-credentials.json | jq -c
+# Eller bare kopier hele innholdet av google-credentials.json og lim inn som én linje
+```
+
+### Steg 4: Deploy
+1. Klikk "Deploy"
+2. Vent til deployment er ferdig (~2-3 minutter)
+3. Test appen på Vercel URL-en!
+
+### Lokal utvikling etter disse endringene
+
+Appen vil fortsatt fungere lokalt. Du har to valg:
+
+**Alternativ 1: Bruk Application Default Credentials (anbefalt)**
+```bash
+# Sett opp Google Cloud authentication
+gcloud auth application-default login
+gcloud config set project habla-483915
+```
+
+**Alternativ 2: Bruk .env.local fil**
+Opprett `frontend/.env.local`:
+```env
+GOOGLE_CLOUD_PROJECT_ID=habla-483915
+GOOGLE_CREDENTIALS={"type":"service_account",...hele JSON fra google-credentials.json...}
+```
+
+Deretter kjør som normalt:
+```bash
+cd frontend
+npm run dev
+```
+
+### Feilsøking på Vercel
+
+**"Authentication failed" error**
+- Sjekk at GOOGLE_CREDENTIALS er satt korrekt i Vercel
+- Verifiser at JSON-strengen er gyldig (ingen linjeskift inne i private_key)
+- Sjekk at Speech-to-Text og Text-to-Speech APIer er aktivert i Google Cloud Console
+
+**"Module not found" error**
+- Deploy på nytt (Vercel → Deployments → ... → Redeploy)
+
+**Build failed**
+- Sjekk build logs i Vercel dashboard
+- Verifiser at alle dependencies er i frontend/package.json
+
 ## 📝 Lisens
 
 Dette er et personlig prosjekt for språklæring.

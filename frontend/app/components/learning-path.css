@@ -1,46 +1,324 @@
-/* Learning Path Container */
+/* ============================================
+   🛤️ Learning Path - Duolingo Style
+   ============================================ */
+
+/* --- Main Container with Enhanced Nature Background --- */
 .learning-path-container {
     width: 100%;
     min-height: 100vh;
-    background-color: #fce7f3;
-    /* Light pinkish background from sketch inspiration */
-    background: linear-gradient(135deg, #fdfbf7 0%, #e6f7ff 100%);
-    /* Or a soft gradient */
+  position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 2rem 1rem;
-    font-family: 'Outfit', sans-serif;
-    /* Assuming font availability or fallback */
+  padding: 0;
+  font-family: var(--font-display, 'Nunito', sans-serif);
     overflow-y: auto;
+  overflow-x: hidden;
+  /* Mobile app feel - no max-width needed, body handles it */
+  
+  /* Enhanced layered nature background */
+  background: 
+    /* Clouds */
+    radial-gradient(ellipse 200px 80px at 15% 15%, rgba(255, 255, 255, 0.6) 0%, transparent 50%),
+    radial-gradient(ellipse 250px 100px at 75% 12%, rgba(255, 255, 255, 0.5) 0%, transparent 50%),
+    radial-gradient(ellipse 180px 70px at 50% 18%, rgba(255, 255, 255, 0.4) 0%, transparent 50%),
+    
+    /* Sun glow */
+    radial-gradient(circle 150px at 85% 15%, rgba(255, 235, 59, 0.3) 0%, transparent 70%),
+    
+    /* Distant hills */
+    radial-gradient(ellipse 140% 30% at 50% 40%, #7DD3FC 0%, transparent 50%),
+    radial-gradient(ellipse 100% 20% at 30% 45%, #93C5FD 0%, transparent 50%),
+    radial-gradient(ellipse 120% 25% at 70% 43%, #BFDBFE 0%, transparent 50%),
+    
+    /* Grass layers with depth */
+    radial-gradient(ellipse 100% 40% at 50% 90%, #4ADE80 0%, transparent 60%),
+    radial-gradient(ellipse 80% 35% at 30% 85%, #86EFAC 0%, transparent 55%),
+    radial-gradient(ellipse 90% 38% at 70% 87%, #BBF7D0 0%, transparent 58%),
+    
+    /* Main sky gradient */
+    linear-gradient(180deg, 
+      #7DD3FC 0%,      /* Sky blue */
+      #BAE6FD 15%,     /* Lighter blue */
+      #E0F2FE 35%,     /* Very light blue */
+      #FEF3C7 50%,     /* Warm horizon */
+      #D9F99D 65%,     /* Yellow-green transition */
+      #BBF7D0 78%,     /* Light green */
+      #86EFAC 88%,     /* Medium green */
+      #4ADE80 100%     /* Dark green base */
+    );
 }
 
+/* Animated clouds */
+.learning-path-container::before,
+.learning-path-container::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.7);
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.learning-path-container::before {
+  width: 200px;
+  height: 80px;
+  top: 10%;
+  left: 10%;
+  animation: floatCloud1 20s ease-in-out infinite;
+}
+
+.learning-path-container::after {
+  width: 250px;
+  height: 100px;
+  top: 20%;
+  right: 15%;
+  animation: floatCloud2 25s ease-in-out infinite;
+}
+
+@keyframes floatCloud1 {
+  0%, 100% { transform: translateX(0) translateY(0); }
+  50% { transform: translateX(30px) translateY(-10px); }
+}
+
+@keyframes floatCloud2 {
+  0%, 100% { transform: translateX(0) translateY(0); }
+  50% { transform: translateX(-40px) translateY(15px); }
+}
+
+/* Enhanced decorative nature elements */
+.tree-left {
+  position: absolute;
+  top: 12%;
+  left: 5%;
+  width: 80px;
+  height: 120px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 80'%3E%3Cdefs%3E%3CradialGradient id='leafGrad'%3E%3Cstop offset='0%25' style='stop-color:%234ADE80'/%3E%3Cstop offset='100%25' style='stop-color:%2322C55E'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cellipse cx='25' cy='70' rx='18' ry='6' fill='%2315803D' opacity='0.3'/%3E%3Crect x='22' y='28' width='6' height='42' fill='%238B5A2B'/%3E%3Crect x='21' y='30' width='2' height='38' fill='%23A0714F' opacity='0.5'/%3E%3Cellipse cx='25' cy='25' rx='22' ry='27' fill='url(%23leafGrad)'/%3E%3Cellipse cx='25' cy='20' rx='17' ry='20' fill='%234ADE80'/%3E%3Cellipse cx='20' cy='22' rx='8' ry='10' fill='%2386EFAC'/%3E%3C/svg%3E") no-repeat center;
+  opacity: 0.85;
+  z-index: 2;
+  pointer-events: none;
+  animation: treeSwayLeft 4s ease-in-out infinite;
+}
+
+.tree-right {
+  position: absolute;
+  top: 35%;
+  right: 4%;
+  width: 90px;
+  height: 140px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 100'%3E%3Cdefs%3E%3ClinearGradient id='pineGrad' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2322C55E'/%3E%3Cstop offset='100%25' style='stop-color:%23166534'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cellipse cx='30' cy='92' rx='20' ry='6' fill='%2315803D' opacity='0.3'/%3E%3Cpolygon points='30,0 58,30 2,30' fill='url(%23pineGrad)'/%3E%3Cpolygon points='30,18 54,48 6,48' fill='url(%23pineGrad)'/%3E%3Cpolygon points='30,36 50,66 10,66' fill='url(%23pineGrad)'/%3E%3Crect x='26' y='66' width='8' height='26' fill='%238B5A2B'/%3E%3Crect x='25' y='68' width='3' height='22' fill='%23A0714F' opacity='0.5'/%3E%3C/svg%3E") no-repeat center;
+  opacity: 0.8;
+  z-index: 2;
+  pointer-events: none;
+  animation: treeSwayRight 5s ease-in-out infinite;
+}
+
+@keyframes treeSwayLeft {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-2deg); }
+}
+
+@keyframes treeSwayRight {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(2deg); }
+}
+
+/* --- Top Bar with Stats --- */
 .learning-path-header {
-    text-align: center;
-    margin-bottom: 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 3px solid var(--duo-gray-pale, #E5E7EB);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-.learning-path-title {
-    font-size: 3rem;
+.header-stats {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--duo-dark, #111827);
+  padding: 0.4rem 0.7rem;
+  background: white;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.stat-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.08);
+}
+
+.stat-item:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+}
+
+.stat-item .icon {
+  font-size: 1.4rem;
+  line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+  animation: iconFloat 3s ease-in-out infinite;
+}
+
+/* Language flag - special styling */
+.stat-item:first-child {
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+  border-color: #FBBF24;
+  box-shadow: 0 2px 0 #F59E0B;
+  padding: 0.5rem 0.8rem;
+}
+
+.stat-item:first-child .icon {
+  font-size: 1.6rem;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.15));
+}
+
+/* Streak - fire colors */
+.stat-item.streak {
+  background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%);
+  border-color: #FB923C;
+}
+
+.stat-item.streak:hover {
+  border-color: #FF9600;
+  box-shadow: 0 4px 0 rgba(255, 150, 0, 0.2);
+}
+
+.stat-item.streak .icon { 
+  color: #FF9600;
+  animation: fireFlicker 2s ease-in-out infinite;
+}
+
+@keyframes fireFlicker {
+  0%, 100% { 
+    transform: scale(1);
+    filter: drop-shadow(0 0 4px rgba(255, 150, 0, 0.3));
+  }
+  50% { 
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 8px rgba(255, 150, 0, 0.5));
+  }
+}
+
+/* Gems - blue/diamond colors */
+.stat-item.gems {
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  border-color: #60A5FA;
+}
+
+.stat-item.gems:hover {
+  border-color: #1CB0F6;
+  box-shadow: 0 4px 0 rgba(28, 176, 246, 0.2);
+}
+
+.stat-item.gems .icon { 
+  color: #1CB0F6;
+  animation: gemSparkle 2.5s ease-in-out infinite;
+}
+
+@keyframes gemSparkle {
+  0%, 100% { 
+    transform: scale(1) rotate(0deg);
+    filter: drop-shadow(0 0 4px rgba(28, 176, 246, 0.3));
+  }
+  50% { 
+    transform: scale(1.08) rotate(-5deg);
+    filter: drop-shadow(0 0 8px rgba(28, 176, 246, 0.6));
+  }
+}
+
+/* Hearts - red/health colors */
+.stat-item.hearts {
+  background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
+  border-color: #F87171;
+}
+
+.stat-item.hearts:hover {
+  border-color: #FF4B4B;
+  box-shadow: 0 4px 0 rgba(255, 75, 75, 0.2);
+}
+
+.stat-item.hearts .icon { 
+  color: #FF4B4B;
+  animation: heartBeat 1.5s ease-in-out infinite;
+}
+
+@keyframes heartBeat {
+  0%, 100% { 
+    transform: scale(1);
+  }
+  10%, 30% { 
+    transform: scale(1.1);
+  }
+  20%, 40% { 
+    transform: scale(0.95);
+  }
+}
+
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+/* --- Section Banner --- */
+.section-banner {
+  width: calc(100% - 2rem);
+  margin: 1.5rem 1rem;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, var(--duo-green, #58CC02) 0%, var(--duo-green-dark, #46A302) 100%);
+  border-radius: 16px;
+  box-shadow: 0 4px 0 var(--duo-green-dark, #46A302);
+  color: white;
+  z-index: 10;
+}
+
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  opacity: 0.85;
+  margin-bottom: 0.25rem;
+}
+
+.section-title {
+  font-size: 1.3rem;
     font-weight: 800;
-    color: #333;
-    font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
-    /* Playful font for "Læringssti" */
-    letter-spacing: -1px;
+  margin: 0;
 }
 
-/* The winding path area */
+/* --- Path Area --- */
 .path-area {
     position: relative;
     width: 100%;
-    max-width: 400px;
-    height: 800px;
-    /* Adjust based on content */
+  min-height: 900px;
     display: flex;
-    justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 1rem 6rem;
+  z-index: 5;
 }
 
-/* SVG Path behind the nodes */
+/* --- Dirt Path SVG --- */
 .path-svg {
     position: absolute;
     top: 0;
@@ -53,107 +331,423 @@
 
 .path-line {
     fill: none;
-    stroke: #e5e7eb;
-    stroke-width: 12;
-    stroke-linecap: round;
-    stroke-dasharray: 20 20;
-    /* Dotted line effect */
+  stroke: #D4A574;
+  stroke-width: 45;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 4px 0 #A67C52);
 }
 
-/* Nodes */
+.path-line-inner {
+  fill: none;
+  stroke: #E8C9A0;
+  stroke-width: 35;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.path-dots {
+  fill: none;
+  stroke: #C4A068;
+  stroke-width: 3;
+  stroke-dasharray: 8 16;
+    stroke-linecap: round;
+  opacity: 0.6;
+}
+
+/* --- Lesson Nodes --- */
 .path-node {
     position: absolute;
     display: flex;
     flex-direction: column;
     align-items: center;
-    z-index: 1;
-    cursor: default;
-    transition: transform 0.2s ease;
+  z-index: 10;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .node-content {
     position: relative;
-    width: 100px;
-    height: 100px;
+  width: 90px;
+  height: 90px;
 }
 
+/* Shield/Gem Shape */
+.node-shield {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50% 50% 50% 50% / 42% 42% 58% 58%;
+  background: linear-gradient(180deg, #89E219 0%, #58CC02 50%, #46A302 100%);
+  border: 4px solid #3D8C01;
+  box-shadow: 
+    0 8px 0 #3D8C01,
+    inset 0 -8px 20px rgba(0, 0, 0, 0.15),
+    inset 0 8px 20px rgba(255, 255, 255, 0.25);
+  transition: all 0.2s ease;
+}
+
+.node-shield::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 35%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, transparent 100%);
+  border-radius: 50%;
+}
+
+.node-icon {
+  font-size: 2.2rem;
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.2));
+  z-index: 1;
+}
+
+/* Avatar image inside node */
 .avatar-img {
-    width: 100%;
-    height: 100%;
+  width: 70%;
+  height: 70%;
     object-fit: contain;
-    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.2));
     transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 1;
 }
 
+/* Node Label */
 .node-label {
-    margin-top: 0.5rem;
-    font-weight: 700;
-    font-size: 1.1rem;
-    color: #4b5563;
-    background: rgba(255, 255, 255, 0.8);
-    padding: 2px 8px;
-    border-radius: 12px;
-    backdrop-filter: blur(4px);
+  margin-top: 0.75rem;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: white;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
 }
 
-/* Interactive Node Logic */
-.path-node.interactive {
-    cursor: pointer;
+/* Stars under node */
+.node-stars {
+  display: flex;
+  gap: 2px;
+    margin-top: 0.5rem;
+}
+
+.node-star {
+  font-size: 1rem;
+  color: #9CA3AF;
+  transition: all 0.3s ease;
+}
+
+.node-star.filled {
+  color: #FFC800;
+  filter: drop-shadow(0 1px 2px rgba(217, 170, 0, 0.5));
+}
+
+/* --- Node States --- */
+
+/* Interactive/Current Node */
+.path-node.interactive:hover .node-shield {
+  transform: scale(1.08);
+  box-shadow: 
+    0 10px 0 #3D8C01,
+    inset 0 -8px 20px rgba(0, 0, 0, 0.15),
+    inset 0 8px 20px rgba(255, 255, 255, 0.25),
+    0 0 30px rgba(88, 204, 2, 0.5);
 }
 
 .path-node.interactive:hover .avatar-img {
     transform: scale(1.1) rotate(5deg);
-    filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.2));
 }
 
-.path-node.interactive:active .avatar-img {
+.path-node.interactive:active .node-shield {
     transform: scale(0.95);
+  box-shadow: 
+    0 2px 0 #3D8C01,
+    inset 0 -8px 20px rgba(0, 0, 0, 0.15);
 }
 
-/* Positioning nodes along a curve - manually placed for now to match winding path */
-.node-1 {
-    bottom: 50px;
-    left: 10%;
+/* Current node - pulsing ring */
+.path-node.current .node-shield {
+  animation: currentNodePulse 2s infinite ease-in-out;
 }
 
-/* Kino */
-.node-2 {
-    bottom: 200px;
-    right: 10%;
+@keyframes currentNodePulse {
+  0%, 100% {
+    box-shadow: 
+      0 8px 0 #3D8C01,
+      inset 0 -8px 20px rgba(0, 0, 0, 0.15),
+      inset 0 8px 20px rgba(255, 255, 255, 0.25),
+      0 0 0 0 rgba(88, 204, 2, 0.6);
+  }
+  50% {
+    box-shadow: 
+      0 8px 0 #3D8C01,
+      inset 0 -8px 20px rgba(0, 0, 0, 0.15),
+      inset 0 8px 20px rgba(255, 255, 255, 0.25),
+      0 0 0 20px rgba(88, 204, 2, 0);
+  }
 }
 
-/* Flyplassen placeholder ?? ordering might be reversed top-down */
-/* User asked for 5 steps. "1. Kino" at start usually implies bottom or top. Duolingo is bottom-up. Sketch shows Kino at bottom. */
-
-.node-0 {
-    bottom: 50px;
-    left: 20%;
+/* Dashed ring around current */
+.path-node.current::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120px;
+  height: 110px;
+  border: 4px dashed rgba(88, 204, 2, 0.6);
+  border-radius: 50%;
+  animation: rotateRing 10s linear infinite;
 }
 
-/* Kino */
-.node-1 {
-    bottom: 220px;
-    right: 20%;
+@keyframes rotateRing {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
-.node-2 {
-    bottom: 390px;
-    left: 30%;
+/* Locked Node */
+.path-node.locked {
+  cursor: not-allowed;
 }
 
-.node-3 {
-    bottom: 560px;
-    right: 25%;
+.path-node.locked .node-shield {
+  background: linear-gradient(180deg, #D1D5DB 0%, #9CA3AF 50%, #6B7280 100%);
+  border-color: #4B5563;
+  box-shadow: 
+    0 8px 0 #4B5563,
+    inset 0 -8px 20px rgba(0, 0, 0, 0.2),
+    inset 0 8px 20px rgba(255, 255, 255, 0.15);
 }
 
-.node-4 {
-    bottom: 730px;
-    left: 15%;
+.path-node.locked .avatar-img {
+  filter: grayscale(1) opacity(0.5) drop-shadow(0 3px 5px rgba(0, 0, 0, 0.2));
 }
 
-/* Mobile responsiveness adjustments if needed */
+.path-node.locked .node-label {
+  background: rgba(107, 114, 128, 0.8);
+}
+
+.path-node.locked:hover .node-shield {
+  transform: none;
+}
+
+/* Completed/Gold Node */
+.path-node.completed .node-shield {
+  background: linear-gradient(180deg, #FFE066 0%, #FFC800 50%, #D9AA00 100%);
+  border-color: #B8860B;
+  box-shadow: 
+    0 8px 0 #B8860B,
+    inset 0 -8px 20px rgba(0, 0, 0, 0.15),
+    inset 0 8px 20px rgba(255, 255, 255, 0.35);
+}
+
+.path-node.completed:hover .node-shield {
+  box-shadow: 
+    0 10px 0 #B8860B,
+    inset 0 -8px 20px rgba(0, 0, 0, 0.15),
+    inset 0 8px 20px rgba(255, 255, 255, 0.35),
+    0 0 30px rgba(255, 200, 0, 0.5);
+}
+
+/* --- Node Positioning --- */
+.node-0 { bottom: 50px; left: 50%; transform: translateX(-50%); }
+.node-1 { bottom: 220px; left: 25%; }
+.node-2 { bottom: 390px; left: 55%; }
+.node-3 { bottom: 560px; left: 20%; }
+.node-4 { bottom: 730px; left: 50%; transform: translateX(-50%); }
+
+/* --- Mascot Character --- */
+.mascot-wrapper {
+  position: absolute;
+  bottom: 350px;
+  right: 5%;
+  z-index: 15;
+  animation: float 3s ease-in-out infinite;
+}
+
+.mascot-character {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 15px rgba(0, 0, 0, 0.2));
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* --- Decorative Nature Elements --- */
+
+/* Grass Patches */
+.grass-patch {
+  position: absolute;
+  width: 60px;
+  height: 30px;
+  background: radial-gradient(ellipse at bottom, #4ADE80 0%, transparent 70%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Pebbles/Stones */
+.pebble {
+  position: absolute;
+  width: 15px;
+  height: 10px;
+  background: linear-gradient(135deg, #D1D5DB 0%, #9CA3AF 100%);
+  border-radius: 50%;
+  box-shadow: 
+    0 2px 0 #6B7280,
+    inset -2px -2px 3px rgba(0, 0, 0, 0.2),
+    inset 2px 2px 3px rgba(255, 255, 255, 0.3);
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Flowers */
+.flower {
+  position: absolute;
+  width: 40px;
+  height: 50px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 50'%3E%3Ccircle cx='20' cy='12' r='3' fill='%23FDE047'/%3E%3Ccircle cx='14' cy='15' r='4' fill='%23FB7185'/%3E%3Ccircle cx='26' cy='15' r='4' fill='%23FB7185'/%3E%3Ccircle cx='17' cy='22' r='4' fill='%23FB7185'/%3E%3Ccircle cx='23' cy='22' r='4' fill='%23FB7185'/%3E%3Ccircle cx='20' cy='17' r='3' fill='%23FDE047'/%3E%3Crect x='19' y='20' width='2' height='22' fill='%2322C55E'/%3E%3Cellipse cx='15' cy='38' rx='4' ry='2' fill='%2322C55E'/%3E%3Cellipse cx='25' cy='40' rx='3' ry='1.5' fill='%2322C55E'/%3E%3C/svg%3E") no-repeat center;
+  z-index: 2;
+  pointer-events: none;
+  animation: flowerSway 3s ease-in-out infinite;
+}
+
+@keyframes flowerSway {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+
+/* Bushes */
+.bush {
+  position: absolute;
+  width: 70px;
+  height: 45px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 45'%3E%3Cdefs%3E%3CradialGradient id='bushGrad'%3E%3Cstop offset='0%25' style='stop-color:%2386EFAC'/%3E%3Cstop offset='100%25' style='stop-color:%234ADE80'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cellipse cx='15' cy='30' rx='15' ry='18' fill='url(%23bushGrad)'/%3E%3Cellipse cx='35' cy='25' rx='18' ry='22' fill='url(%23bushGrad)'/%3E%3Cellipse cx='55' cy='32' rx='14' ry='16' fill='url(%23bushGrad)'/%3E%3Cellipse cx='25' cy='38' rx='12' ry='8' fill='%2322C55E'/%3E%3Cellipse cx='45' cy='40' rx='15' ry='6' fill='%2322C55E'/%3E%3C/svg%3E") no-repeat center;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* Butterflies */
+.butterfly {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cellipse cx='10' cy='12' rx='7' ry='10' fill='%23FB923C' opacity='0.8'/%3E%3Cellipse cx='20' cy='12' rx='7' ry='10' fill='%23FB923C' opacity='0.8'/%3E%3Cellipse cx='10' cy='18' rx='6' ry='8' fill='%23FDBA74' opacity='0.7'/%3E%3Cellipse cx='20' cy='18' rx='6' ry='8' fill='%23FDBA74' opacity='0.7'/%3E%3Crect x='14' y='8' width='2' height='14' rx='1' fill='%23422006'/%3E%3C/svg%3E") no-repeat center;
+  z-index: 20;
+  pointer-events: none;
+  animation: butterflyFly 8s ease-in-out infinite;
+}
+
+@keyframes butterflyFly {
+  0% { 
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  50% { 
+    transform: translate(150px, -80px) scale(1.2);
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% { 
+    transform: translate(300px, -20px) scale(0.8);
+    opacity: 0;
+  }
+}
+
+/* Sun */
+.sun {
+  position: absolute;
+  top: 8%;
+  right: 12%;
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle, #FDE047 0%, #FACC15 60%, #EAB308 100%);
+  border-radius: 50%;
+  box-shadow: 
+    0 0 20px rgba(253, 224, 71, 0.5),
+    0 0 40px rgba(250, 204, 21, 0.3),
+    0 0 60px rgba(234, 179, 8, 0.2);
+  z-index: 2;
+  pointer-events: none;
+  animation: sunPulse 4s ease-in-out infinite;
+}
+
+@keyframes sunPulse {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 
+      0 0 20px rgba(253, 224, 71, 0.5),
+      0 0 40px rgba(250, 204, 21, 0.3),
+      0 0 60px rgba(234, 179, 8, 0.2);
+  }
+  50% { 
+    transform: scale(1.05);
+    box-shadow: 
+      0 0 25px rgba(253, 224, 71, 0.6),
+      0 0 50px rgba(250, 204, 21, 0.4),
+      0 0 75px rgba(234, 179, 8, 0.3);
+  }
+}
+
+/* --- Mobile Responsive --- */
 @media (max-width: 480px) {
-    .learning-path-title {
-        font-size: 2.5rem;
-    }
+  .learning-path-header {
+    padding: 0.75rem 1rem;
+  }
+
+  .stat-item {
+    font-size: 0.9rem;
+  }
+
+  .section-banner {
+    margin: 1rem 0.75rem;
+    padding: 0.8rem 1.2rem;
+  }
+
+  .section-title {
+    font-size: 1.1rem;
+  }
+
+  .node-content {
+    width: 75px;
+    height: 75px;
+  }
+
+  .node-label {
+    font-size: 0.85rem;
+    padding: 0.25rem 0.6rem;
+  }
+
+  .path-line {
+    stroke-width: 35;
+  }
+
+  .path-line-inner {
+    stroke-width: 28;
+  }
+}
+
+/* --- Large screens - mobile app feel maintained --- */
+@media (min-width: 768px) {
+  .learning-path-container {
+    background-attachment: fixed;
+  }
 }

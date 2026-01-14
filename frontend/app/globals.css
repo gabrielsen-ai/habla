@@ -2,34 +2,660 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+   🦉 HABLA - Duolingo-Inspired Design System
+   ============================================ */
+
+/* --- Color Palette --- */
 :root {
-  --background: #0f172a;
-  --foreground: #f8fafc;
-  --primary: #38bdf8;
-  --secondary: #818cf8;
-  --accent: #c084fc;
+  /* Primary Greens (Duolingo Signature) */
+  --duo-green: #58CC02;
+  --duo-green-dark: #46A302;
+  --duo-green-light: #89E219;
+  --duo-green-pale: #D7FFB8;
+  --duo-green-bg: #E5F4E3;
+
+  /* Accent Colors */
+  --duo-gold: #FFC800;
+  --duo-gold-dark: #D9AA00;
+  --duo-gold-light: #FFE066;
+  
+  --duo-blue: #1CB0F6;
+  --duo-blue-dark: #0899D6;
+  --duo-blue-pale: #DDF4FF;
+  
+  --duo-red: #FF4B4B;
+  --duo-red-dark: #EA2B2B;
+  
+  --duo-purple: #CE82FF;
+  --duo-purple-dark: #A855F7;
+  
+  --duo-orange: #FF9600;
+  --duo-orange-dark: #E08600;
+
+  /* Neutrals */
+  --duo-dark: #111827;
+  --duo-dark-secondary: #1F2937;
+  --duo-dark-tertiary: #374151;
+  --duo-gray: #6B7280;
+  --duo-gray-light: #9CA3AF;
+  --duo-gray-pale: #E5E7EB;
+  --duo-white: #FFFFFF;
+  --duo-off-white: #F7F7F7;
+
+  /* Backgrounds */
+  --bg-nature: linear-gradient(180deg, #87CEAB 0%, #DCEDC8 30%, #F5DEB3 60%, #D2B48C 100%);
+  --bg-sky: linear-gradient(180deg, #87CEEB 0%, #B0E0E6 50%, #DCEDC8 100%);
+  --bg-warm: linear-gradient(180deg, #FDFBF7 0%, #FFF8E7 50%, #FFF1F2 100%);
+  --bg-dark: linear-gradient(180deg, #111827 0%, #1F2937 100%);
+
+  /* Shadows */
+  --shadow-sm: 0 2px 0 rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 0 rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 6px 0 rgba(0, 0, 0, 0.2);
+  --shadow-glow-green: 0 0 20px rgba(88, 204, 2, 0.4);
+  --shadow-glow-gold: 0 0 20px rgba(255, 200, 0, 0.4);
+  --shadow-glow-blue: 0 0 20px rgba(28, 176, 246, 0.4);
+
+  /* Typography */
+  --font-display: 'Nunito', 'Outfit', system-ui, sans-serif;
+  --font-body: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
 }
 
+/* --- Base Reset --- */
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background: #F8FAFC;
-  color: #0F172A;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-family: var(--font-body);
+  font-weight: 600;
+  color: var(--duo-dark);
   min-height: 100vh;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Mobile app container - center content on desktop */
+  display: flex;
+  justify-content: center;
+  background: var(--duo-gray-pale);
+}
+
+/* Global mobile app container */
+body > * {
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+@media (min-width: 481px) {
+  body {
+    background: linear-gradient(135deg, #E5E7EB 0%, #D1D5DB 100%);
+  }
+}
+
+/* --- Typography --- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
+
+p {
+  line-height: 1.6;
 }
 
 a {
   color: inherit;
   text-decoration: none;
-  transition: opacity 0.2s ease;
+  transition: all 0.2s ease;
 }
 
-a:hover {
-  opacity: 0.8;
+/* ============================================
+   🎮 Duolingo-Style Components
+   ============================================ */
+
+/* --- Primary Button (Green 3D) --- */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-xl);
+  background: var(--duo-green);
+  color: var(--duo-white);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: none;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 0 var(--duo-green-dark);
+  cursor: pointer;
+  transition: all 0.1s ease;
+  user-select: none;
 }
+
+.btn-primary:hover {
+  filter: brightness(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 var(--duo-green-dark);
+}
+
+.btn-primary:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 var(--duo-green-dark);
+}
+
+/* Secondary Button (Blue) */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-xl);
+  background: var(--duo-blue);
+  color: var(--duo-white);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: none;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 0 var(--duo-blue-dark);
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.btn-secondary:hover {
+  filter: brightness(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 var(--duo-blue-dark);
+}
+
+.btn-secondary:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 var(--duo-blue-dark);
+}
+
+/* Outline Button */
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-xl);
+  background: transparent;
+  color: var(--duo-blue);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 3px solid var(--duo-gray-pale);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-outline:hover {
+  background: var(--duo-blue-pale);
+  border-color: var(--duo-blue);
+}
+
+/* --- Card Styles --- */
+.duo-card {
+  background: var(--duo-white);
+  border: 2px solid var(--duo-gray-pale);
+  border-radius: var(--radius-xl);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.duo-card:hover {
+  border-color: var(--duo-blue);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.duo-card-dark {
+  background: var(--duo-dark-secondary);
+  border: 2px solid var(--duo-dark-tertiary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-lg);
+}
+
+/* --- Section Header (Like Duolingo's "Section 1") --- */
+.section-header {
+  background: var(--duo-green);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md) var(--space-lg);
+  color: var(--duo-white);
+  box-shadow: 0 4px 0 var(--duo-green-dark);
+}
+
+.section-header-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.8;
+  margin-bottom: var(--space-xs);
+}
+
+.section-header-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+/* --- Lesson Node (Duolingo Shield Style) --- */
+.lesson-node {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.lesson-node-inner {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, var(--duo-green-light) 0%, var(--duo-green) 100%);
+  border-radius: 50% 50% 50% 50% / 45% 45% 55% 55%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 8px 0 var(--duo-green-dark),
+    inset 0 -4px 0 rgba(0, 0, 0, 0.1);
+  border: 4px solid var(--duo-green-dark);
+}
+
+.lesson-node:hover {
+  transform: scale(1.1);
+}
+
+.lesson-node:hover .lesson-node-inner {
+  box-shadow: 
+    0 10px 0 var(--duo-green-dark),
+    inset 0 -4px 0 rgba(0, 0, 0, 0.1),
+    var(--shadow-glow-green);
+}
+
+.lesson-node:active {
+  transform: scale(0.95);
+}
+
+.lesson-node:active .lesson-node-inner {
+  box-shadow: 
+    0 2px 0 var(--duo-green-dark),
+    inset 0 -4px 0 rgba(0, 0, 0, 0.1);
+}
+
+.lesson-node-icon {
+  font-size: 2rem;
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.2));
+}
+
+/* Locked Node */
+.lesson-node.locked .lesson-node-inner {
+  background: linear-gradient(180deg, #D1D5DB 0%, #9CA3AF 100%);
+  border-color: #6B7280;
+  box-shadow: 0 8px 0 #6B7280, inset 0 -4px 0 rgba(0, 0, 0, 0.1);
+}
+
+.lesson-node.locked {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.lesson-node.locked:hover {
+  transform: none;
+}
+
+/* Gold/Trophy Node */
+.lesson-node.completed .lesson-node-inner {
+  background: linear-gradient(180deg, var(--duo-gold-light) 0%, var(--duo-gold) 100%);
+  border-color: var(--duo-gold-dark);
+  box-shadow: 0 8px 0 var(--duo-gold-dark), inset 0 -4px 0 rgba(0, 0, 0, 0.1);
+}
+
+.lesson-node.completed:hover .lesson-node-inner {
+  box-shadow: 
+    0 10px 0 var(--duo-gold-dark),
+    inset 0 -4px 0 rgba(0, 0, 0, 0.1),
+    var(--shadow-glow-gold);
+}
+
+/* Current/Active Node with pulse */
+.lesson-node.current .lesson-node-inner {
+  animation: nodePulse 2s infinite ease-in-out;
+}
+
+@keyframes nodePulse {
+  0%, 100% {
+    box-shadow: 
+      0 8px 0 var(--duo-green-dark),
+      inset 0 -4px 0 rgba(0, 0, 0, 0.1),
+      0 0 0 0 rgba(88, 204, 2, 0.4);
+  }
+  50% {
+    box-shadow: 
+      0 8px 0 var(--duo-green-dark),
+      inset 0 -4px 0 rgba(0, 0, 0, 0.1),
+      0 0 0 15px rgba(88, 204, 2, 0);
+  }
+}
+
+/* --- Star Rating --- */
+.stars-container {
+  display: flex;
+  gap: var(--space-xs);
+  justify-content: center;
+}
+
+.star {
+  font-size: 1.25rem;
+  color: var(--duo-gray-pale);
+  transition: all 0.3s ease;
+}
+
+.star.filled {
+  color: var(--duo-gold);
+  filter: drop-shadow(0 2px 2px rgba(217, 170, 0, 0.5));
+}
+
+/* --- Progress Bar --- */
+.progress-bar {
+  width: 100%;
+  height: 16px;
+  background: var(--duo-gray-pale);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--duo-green) 0%, var(--duo-green-light) 100%);
+  border-radius: var(--radius-full);
+  transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 2px 0 var(--duo-green-dark);
+}
+
+.progress-bar.gold .progress-bar-fill {
+  background: linear-gradient(90deg, var(--duo-gold) 0%, var(--duo-gold-light) 100%);
+  box-shadow: 0 2px 0 var(--duo-gold-dark);
+}
+
+/* --- XP Badge --- */
+.xp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--duo-gold);
+  color: var(--duo-dark);
+  font-weight: 800;
+  font-size: 0.875rem;
+  border-radius: var(--radius-full);
+  box-shadow: 0 2px 0 var(--duo-gold-dark);
+}
+
+.streak-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--duo-orange);
+  color: var(--duo-white);
+  font-weight: 800;
+  font-size: 0.875rem;
+  border-radius: var(--radius-full);
+  box-shadow: 0 2px 0 var(--duo-orange-dark);
+}
+
+/* --- Top Bar / Header --- */
+.top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid var(--duo-gray-pale);
+  z-index: 100;
+}
+
+.top-bar-stats {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+/* --- Mascot/Character Container --- */
+.mascot-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mascot-img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.mascot-img:hover {
+  transform: scale(1.1) rotate(5deg);
+}
+
+/* --- Tooltip --- */
+.tooltip {
+  position: relative;
+}
+
+.tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--duo-dark);
+  color: var(--duo-white);
+  font-size: 0.875rem;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+}
+
+.tooltip:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-12px);
+}
+
+/* ============================================
+   🌈 Utility Classes
+   ============================================ */
+
+/* Text Colors */
+.text-green { color: var(--duo-green); }
+.text-gold { color: var(--duo-gold); }
+.text-blue { color: var(--duo-blue); }
+.text-red { color: var(--duo-red); }
+.text-gray { color: var(--duo-gray); }
+.text-white { color: var(--duo-white); }
+
+/* Background Colors */
+.bg-green { background: var(--duo-green); }
+.bg-gold { background: var(--duo-gold); }
+.bg-blue { background: var(--duo-blue); }
+.bg-dark { background: var(--duo-dark); }
+.bg-nature { background: var(--bg-nature); }
+.bg-warm { background: var(--bg-warm); }
+
+/* ============================================
+   ✨ Animations
+   ============================================ */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+}
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  80% {
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Animation Classes */
+.animate-fade-in { animation: fadeIn 0.5s ease-out; }
+.animate-fade-in-up { animation: fadeInUp 0.5s ease-out; }
+.animate-fade-in-down { animation: fadeInDown 0.5s ease-out; }
+.animate-slide-up { animation: slideUp 0.5s ease-out; }
+.animate-scale-in { animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.animate-bounce { animation: bounce 1s infinite; }
+.animate-wiggle { animation: wiggle 0.5s ease-in-out; }
+.animate-pop-in { animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.animate-float { animation: float 3s ease-in-out infinite; }
+
+/* Stagger delays */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+
+/* ============================================
+   📱 Responsive
+   ============================================ */
+
+@media (max-width: 768px) {
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+  
+  .btn-primary,
+  .btn-secondary {
+    padding: var(--space-sm) var(--space-lg);
+    font-size: 0.9rem;
+  }
+}
+
+/* Font imported in layout.js via next/font/google for better performance */
