@@ -1,0 +1,7 @@
+{
+  "buildCommand": "npm install --prefix frontend && npm run build --prefix frontend",
+  "devCommand": "npm run dev --prefix frontend",
+  "installCommand": "echo 'Skipping root install'",
+  "framework": null,
+  "outputDirectory": "frontend/.next"
+}
